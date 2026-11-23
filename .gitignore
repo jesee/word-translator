@@ -1,0 +1,4 @@
+node_modules/
+ext/dist/
+ext/.venv-shexli/
+ext/word-translator@local/schemas/gschemas.compiled

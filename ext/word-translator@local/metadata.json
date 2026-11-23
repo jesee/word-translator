@@ -1,8 +1,15 @@
 {
   "uuid": "word-translator@local",
-  "name": "Word Translator Trigger",
-  "description": "为划词翻译应用注册全局快捷键（Wayland 下的热键桥）",
-  "shell-version": ["45", "46", "47", "48"],
+  "name": "Word Translator",
+  "description": "Translate the text you select, right from a popup on your desktop.\n\nSelect text anywhere, press the shortcut you set in the preferences, and the original text and its translation appear in a movable popup with two editable, scrollable panes. Copy what you need with Ctrl+C, or fix a typo and translate again. Chinese, English, Japanese and Korean, with a Google engine and an automatic Tencent fallback.\n\nClipboard: the selection is read only when you press your shortcut (or turn on auto mode yourself), and Ctrl+C inside the popup writes to the clipboard. No shortcut is preset. Text is sent only to the translation endpoint.\n\n选中文字按快捷键即可翻译，弹窗里原文和译文都能编辑、滚动、选中复制。",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "48"
+  ],
+  "url": "https://github.com/jesee/word-translator",
   "settings-schema": "org.gnome.shell.extensions.word-translator",
-  "url": "https://local"
+  "version": 1,
+  "version-name": "1.0.3"
 }

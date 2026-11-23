@@ -1,15 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist>
   <schema id="org.gnome.shell.extensions.word-translator" path="/org/gnome/shell/extensions/word-translator/">
+    <!-- 出厂不带默认快捷键：extensions.gnome.org 审核禁止扩展自带读取剪贴板的默认快捷键，
+         必须由用户在设置里显式指定。install.sh 只在开发机安装时写入一次。 -->
     <key name="translate-shortcut" type="as">
-      <default><![CDATA[["<Alt><Super>x"]]]></default>
+      <default><![CDATA[[]]]></default>
       <summary>Translate shortcut</summary>
-      <description>Global keybinding to translate the current selection.</description>
+      <description>Global keybinding to translate the current selection. Empty by default; set it in the extension preferences.</description>
+    </key>
+    <key name="target-lang" type="s">
+      <default>"zh-CN"</default>
+      <summary>Target language</summary>
     </key>
     <key name="watch-enabled" type="b">
-      <default>true</default>
+      <default>false</default>
       <summary>Auto translate on selection</summary>
-      <description>Poll PRIMARY selection and auto-translate.</description>
+      <description>Automatically translate selected text without pressing the hotkey.</description>
+    </key>
+    <key name="google-api-key" type="s">
+      <default>""</default>
+      <summary>Google Cloud Translation API key (optional)</summary>
+      <description>When set, the official Google Cloud Translation v2 endpoint is used instead of the free web endpoint. Leave empty to use the free endpoint.</description>
+    </key>
+    <key name="proxy" type="s">
+      <default>""</default>
+      <summary>HTTP proxy for translation requests</summary>
+    </key>
+    <key name="popup-width" type="i">
+      <default>720</default>
+      <summary>弹窗宽度</summary>
+      <description>弹窗默认宽度，实际显示时再按屏幕尺寸收敛。</description>
+    </key>
+    <key name="popup-height" type="i">
+      <default>560</default>
+      <summary>弹窗高度</summary>
+      <description>弹窗默认高度，实际显示时最多占屏幕高度的 80%。</description>
     </key>
   </schema>
 </schemalist>
