@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  :root { color-scheme: light dark; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font: 14px/1.6 system-ui, "Noto Sans CJK SC", sans-serif;
+    background: canvas; color: canvastext;
+    border: 1px solid color-mix(in srgb, canvastext 15%, transparent);
+    border-radius: 8px; height: 100vh; display: flex; flex-direction: column;
+    overflow: hidden; user-select: none;
+  }
+  header { display: flex; gap: 6px; padding: 8px 10px 4px; align-items: center; }
+  header .meta { font-size: 12px; opacity: .55; margin-left: auto; }
+  #source {
+    padding: 6px 12px; font-size: 13px; opacity: .75;
+    max-height: 5.2em; overflow-y: auto; user-select: text;
+    border-bottom: 1px dashed color-mix(in srgb, canvastext 15%, transparent);
+  }
+  #result { flex: 1; padding: 10px 12px; font-size: 16px; overflow-y: auto; user-select: text; }
+  footer { display: flex; gap: 6px; padding: 6px 10px; }
+  button {
+    font: 12px system-ui; padding: 3px 10px; border-radius: 6px; cursor: pointer;
+    border: 1px solid color-mix(in srgb, canvastext 20%, transparent);
+    background: transparent; color: canvastext;
+  }
+  button:hover { background: color-mix(in srgb, canvastext 8%, transparent); }
+  .err { color: #d9534f; font-size: 13px; }
+  select { font: 12px system-ui; background: transparent; color: canvastext; border: 1px solid color-mix(in srgb, canvastext 20%, transparent); border-radius: 6px; }
+</style>
+</head>
+<body>
+  <header>
+    <select id="to">
+      <option value="zh-CN">中文</option>
+      <option value="en">English</option>
+      <option value="ja">日本語</option>
+      <option value="ko">한국어</option>
+    </select>
+    <span class="meta" id="meta"></span>
+  </header>
+  <div id="source"></div>
+  <div id="result">…</div>
+  <footer>
+    <button id="copy">复制</button>
+    <button id="retry">重试</button>
+    <button id="settings">设置</button>
+    <button id="close" style="margin-left:auto">✕</button>
+  </footer>
+<script>
+  let currentText = '';
+  const $ = (id) => document.getElementById(id);
+
+  async function run() {
+    if (!currentText) return;
+    $('source').textContent = currentText;
+    $('result').textContent = '翻译中…';
+    $('result').className = '';
+    $('meta').textContent = '';
+    try {
+      const r = await window.api.translate({ text: currentText, from: 'auto', to: $('to').value });
+      $('result').textContent = r.text;
+      $('meta').textContent = r.detected ? `检测: ${r.detected} · ${r.engineName}` : r.engineName;
+    } catch (e) {
+      $('result').textContent = '翻译失败：' + e.message;
+      $('result').className = 'err';
+    }
+  }
+
+  window.api.onTranslateStart((text) => { currentText = text; run(); });
+  $('to').addEventListener('change', run);
+  $('retry').addEventListener('click', run);
+  $('copy').addEventListener('click', () => window.api.copyResult($('result').textContent));
+  $('settings').addEventListener('click', () => window.api.openSettings());
+  $('close').addEventListener('click', () => window.api.hidePopup());
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') window.api.hidePopup(); });
+</script>
+</body>
+</html>

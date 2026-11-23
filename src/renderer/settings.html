@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<style>
+  body { font: 14px/1.8 system-ui, "Noto Sans CJK SC", sans-serif; margin: 20px; color-scheme: light dark; }
+  label { display: block; margin-top: 14px; font-weight: 600; }
+  input, select { width: 100%; padding: 6px 8px; margin-top: 4px; font: 13px system-ui; }
+  .hint { font-size: 12px; opacity: .6; }
+  button { margin-top: 8px; padding: 6px 16px; cursor: pointer; }
+  #saved { color: green; margin-left: 12px; opacity: 0; transition: opacity .3s; }
+  .row { display: flex; gap: 8px; align-items: center; }
+  code { background: color-mix(in srgb, canvastext 10%, transparent); padding: 1px 5px; border-radius: 4px; }
+  #hotkey { font-family: monospace; letter-spacing: 1px; }
+  #hotkey.recording { border-color: #d9534f; color: #d9534f; }
+</style>
+</head>
+<body>
+  <h3>设置</h3>
+
+  <label>自动划词</label>
+  <div class="row">
+    <input type="checkbox" id="watchEnabled" style="width:auto">
+    <span>选中文字后自动弹窗翻译（无需热键）</span>
+  </div>
+  <div class="hint">由 GNOME 扩展在 shell 内监听选中（PRIMARY），不干扰打字。</div>
+
+  <label>翻译热键（兜底）</label>
+  <div class="row">
+    <input id="hotkey" readonly placeholder="点击后按下组合键（需含修饰键）">
+    <button id="saveHotkey">应用</button>
+  </div>
+  <div class="row"><span id="hotkeyMsg" class="hint"></span></div>
+  <div class="hint">修改立即生效，无需重新登录。键盘选区（Shift+方向键）等 PRIMARY 拿不到的场景用它。</div>
+
+  <label>默认引擎</label>
+  <select id="engine"></select>
+  <div class="hint">默认引擎失败时自动降级到国内可直连的引擎。</div>
+
+  <label>目标语言</label>
+  <select id="targetLang">
+    <option value="zh-CN">中文</option>
+    <option value="en">English</option>
+    <option value="ja">日本語</option>
+    <option value="ko">한국어</option>
+  </select>
+
+  <label>代理地址</label>
+  <input id="proxy" placeholder="http://127.0.0.1:7890（留空不使用）">
+  <div class="hint">Google 引擎在大陆需要代理；腾讯引擎直连。</div>
+
+  <label>Google 官方 API Key（可选）</label>
+  <input id="key-google-official" placeholder="AIza...">
+  <div class="hint">BYOK：使用你自己的 Google Cloud Translation key，仅保存在本机。</div>
+
+  <button id="save">保存</button><span id="saved">已保存</span>
+
+<script>
+  const $ = (id) => document.getElementById(id);
+
+  (async () => {
+    const [s, engines] = await Promise.all([window.api.getSettings(), window.api.listEngines()]);
+    for (const e of engines) {
+      const o = document.createElement('option');
+      o.value = e.id; o.textContent = e.name + (e.needsKey ? '（需 key）' : '');
+      $('engine').appendChild(o);
+    }
+    $('engine').value = s.engine;
+    $('targetLang').value = s.targetLang;
+    $('watchEnabled').checked = s.watchEnabled !== false;
+    $('proxy').value = s.proxy;
+    $('key-google-official').value = s.apiKeys?.['google-official'] || '';
+  })();
+
+  // ---- 热键设置 ----
+  (async () => {
+    const hk = await window.api.getHotkey();
+    if (hk) $('hotkey').value = hk;
+  })();
+
+  let recording = false;
+  $('hotkey').addEventListener('click', () => {
+    recording = true;
+    $('hotkey').value = '按下组合键…';
+    $('hotkey').classList.add('recording');
+  });
+  document.addEventListener('keydown', (e) => {
+    if (!recording) return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.key === 'Escape') {
+      recording = false;
+      $('hotkey').classList.remove('recording');
+      return;
+    }
+    if (['Control', 'Alt', 'Shift', 'Meta'].includes(e.key)) return; // 等主键
+    const parts = [];
+    if (e.ctrlKey) parts.push('Control');
+    if (e.altKey) parts.push('Alt');
+    if (e.metaKey) parts.push('Super');
+    if (e.shiftKey) parts.push('Shift');
+    parts.push(e.key.length === 1 ? e.key.toUpperCase() : e.key);
+    recording = false;
+    $('hotkey').classList.remove('recording');
+    $('hotkey').value = parts.join('+');
+  }, true);
+
+  $('saveHotkey').addEventListener('click', async () => {
+    const combo = $('hotkey').value.trim();
+    const r = await window.api.setHotkey(combo);
+    $('hotkeyMsg').textContent = r.ok
+      ? `✔ 已生效，落库值: ${r.stored}`
+      : `✘ ${r.error || '设置失败'}`;
+    setTimeout(() => $('hotkeyMsg').textContent = '', 6000);
+  });
+
+  $('save').addEventListener('click', async () => {
+    await window.api.saveSettings({
+      engine: $('engine').value,
+      targetLang: $('targetLang').value,
+      watchEnabled: $('watchEnabled').checked,
+      proxy: $('proxy').value.trim(),
+      apiKeys: { 'google-official': $('key-google-official').value.trim() },
+    });
+    $('saved').style.opacity = 1;
+    setTimeout(() => $('saved').style.opacity = 0, 1500);
+  });
+</script>
+</body>
+</html>

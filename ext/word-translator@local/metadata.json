@@ -1,0 +1,8 @@
+{
+  "uuid": "word-translator@local",
+  "name": "Word Translator Trigger",
+  "description": "为划词翻译应用注册全局快捷键（Wayland 下的热键桥）",
+  "shell-version": ["45", "46", "47", "48"],
+  "settings-schema": "org.gnome.shell.extensions.word-translator",
+  "url": "https://local"
+}

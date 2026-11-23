@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.word-translator" path="/org/gnome/shell/extensions/word-translator/">
+    <key name="translate-shortcut" type="as">
+      <default><![CDATA[["<Alt><Super>x"]]]></default>
+      <summary>Translate shortcut</summary>
+      <description>Global keybinding to translate the current selection.</description>
+    </key>
+    <key name="watch-enabled" type="b">
+      <default>true</default>
+      <summary>Auto translate on selection</summary>
+      <description>Poll PRIMARY selection and auto-translate.</description>
+    </key>
+  </schema>
+</schemalist>
