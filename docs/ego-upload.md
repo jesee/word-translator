@@ -62,17 +62,10 @@ Thanks for reviewing! Notes:
   _track()/_untrack() so nothing leaks between enable cycles.
 ```
 
-## 还剩一件事：把主页地址落实
+## 项目主页
 
-`url` 现在填的是 `https://github.com/jesee/word-translator` —— 取自本机 git 用户名 `jesee`。这个仓库还不存在
-（`https://github.com/jesee/word-translator` 目前 404），审核员点进去会是空页面，建议上传前先建一个：
-
-```bash
-git remote add origin git@github.com:jesee/word-translator.git
-git push -u origin master
-```
-
-如果你的 GitHub 用户名不是 `jesee`，或者仓库名不想叫 `word-translator`：
+`url` 填的是 `https://github.com/jesee/word-translator`，仓库已建好并推送成功（公开可访问），
+审核要求的「能打开的项目地址」这条满足了。换仓库时：
 
 ```bash
 URL=https://github.com/你的用户名/你的仓库名 ./ext/package.sh
