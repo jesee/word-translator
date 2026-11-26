@@ -43,6 +43,33 @@ URL=https://github.com/你/word-translator ./ext/package.sh        # 项目主�
 UUID=word-translator@你.github.io ./ext/package.sh                # uuid
 ```
 
+## 审核状态怎么读
+
+| 页面上的字样 | 含义 |
+| --- | --- |
+| `Unreviewed` | **正常排队**，等志愿者审核，没有任何问题 |
+| `Rejected`（带 reviewer 评论） | 真被拒，会写明原因 |
+| `auto-rejected` | **不是被拒**：你上传了更新的版本，旧版本被站点自动关掉 |
+| `Approved` / `Active` | 通过，可以在站点装上 |
+
+当前状态（extension 11917）：
+
+| 版本 | 状态 | 说明 |
+| --- | --- | --- |
+| 1.0.0 (1) | Rejected | `Auto-rejected because of new version 1.0.3 (2) was uploaded` —— 我们传了 1.0.3，它被自动关掉 |
+| 1.0.3 (2) | **Unreviewed** | 排队中，`No comments` = 审核员还没看 |
+
+审核由志愿者做，通常几天到几周，期间详情页 `/extension/11917/` 对外是 404（未审核不公开），这是正常的。
+
+## 审核员可能会问什么，怎么答
+
+| 可能的问题 | 准备的说辞 |
+| --- | --- |
+| 为什么用 `curl` 而不是 libsoup | 需要 `--max-time` 硬超时、`-x` 代理，以及仅对证书过期的 `transmart.qq.com` 单独放开校验；zip 里不含任何二进制，curl 是系统依赖，`Gio.Subprocess` 启动并在回调里收尾，`disable()` 不残留 |
+| 为什么读剪贴板 | 描述里已声明；只在用户按自己设置的快捷键时读 PRIMARY，或用户亲手打开自动模式时才读；没有预置快捷键 |
+| uuid 的 `@local` | namespace 应该是自己控制的域名/账号。备用包已经准备好：`ext/dist/word-translator@jesee.github.io.zip`，被要求改时直接上传即可（注意 eGO 不能改已有 uuid，会变成一个**新扩展条目**，旧条目弃用） |
+| 图标是占位的 | 扩展页面上点图标可以上传，用 `docs/icon.png`（512×512） |
+
 ## 三张截图分别展示
 
 1. `01-scroll.png` —— 长文本：原文区自动滚动（上下有淡出提示），译文区自动换行，内容不会撑破窗口。
